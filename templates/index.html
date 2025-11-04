@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EasyPassword</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-900 text-gray-100 flex flex-col items-center justify-center min-h-screen">
+  <div class="w-full max-w-md bg-gray-800 rounded-2xl shadow-xl p-8">
+    <h1 class="text-3xl font-bold text-center mb-6 text-indigo-400">🔐 GoPassword</h1>
+
+    <form method="POST" action="/generate" onsubmit="return generate(event)" class="space-y-4">
+      <div>
+        <label class="block mb-1 font-medium">Lenght:</label>
+        <input type="number" name="length" value="12" min="4" max="64" required
+               class="w-full p-2 rounded bg-gray-700 border border-gray-600 focus:ring-2 focus:ring-indigo-500">
+      </div>
+
+      <div class="space-y-2">
+        <label class="flex items-center gap-2">
+          <input type="checkbox" name="upper" checked class="accent-indigo-500"> Uppercase letters
+        </label>
+        <label class="flex items-center gap-2">
+          <input type="checkbox" name="lower" checked class="accent-indigo-500"> Lowercase letters
+        </label>
+        <label class="flex items-center gap-2">
+          <input type="checkbox" name="digits" checked class="accent-indigo-500"> Numbers
+        </label>
+        <label class="flex items-center gap-2">
+          <input type="checkbox" name="symbols" class="accent-indigo-500"> Symbols
+        </label>
+      </div>
+
+      <button type="submit"
+              class="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-2 rounded-lg font-semibold transition-all">
+        Go!
+      </button>
+    </form>
+
+    <div id="result" class="mt-6 text-center text-xl font-semibold text-green-400 break-words"></div>
+
+    <button id="copyBtn"
+            onclick="copyPassword()"
+            class="hidden mt-4 w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded-lg font-semibold transition-all">
+      Copy password
+    </button>
+  </div>
+
+  <footer class="mt-6 text-gray-500 text-sm">developed by Caio with GO!</footer>
+
+  <script>
+    async function generate(e) {
+      e.preventDefault();
+      const form = e.target;
+      const formData = new FormData(form);
+      const resp = await fetch("/generate", { method: "POST", body: formData });
+      const text = await resp.text();
+      document.getElementById("result").textContent = text;
+      document.getElementById("copyBtn").classList.remove("hidden");
+    }
+
+    function copyPassword() {
+      const text = document.getElementById("result").textContent;
+      if (!text) return;
+      navigator.clipboard.writeText(text);
+      const btn = document.getElementById("copyBtn");
+      btn.textContent = "✅ Copiada!";
+      setTimeout(() => (btn.textContent = "Copiar Senha"), 1500);
+    }
+  </script>
+</body>
+</html>
